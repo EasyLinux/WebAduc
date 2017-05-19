@@ -1,0 +1,62 @@
+{% include 'header.twig' %}
+    <script src="src/javascript/main.js"></script>  
+</head>
+<body>
+
+<form action='index.php' id='formAction' method='post'>
+  <div class="container">
+
+    {# Boîte modale de type Popup #}
+    <div class="modal fade" id="popModal">
+      <div class="modal-header">
+        <a class="close" data-dismiss="modal">&times;&nbsp;&nbsp;</a>
+        <h3 id="popTitle"></h3>
+      </div>
+      <div class="modal-body" id="popContent">
+
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal" id='popClose'>Fermer</a>
+        <a href="#" class="btn btn-primary" id="popAction" 
+           id='popAction' onClick='myValid();' >Enregistrer</a>
+      </div>
+    </div> <!-- /div popModal -->
+	{# /Boîte modale de type Popup #}
+
+	{# Menu de l'application #}
+    <nav class="navbar navbar-default">
+        <ul class="nav navbar-nav">
+          <li><a href="#" onClick='Quit();' id='Logout'>D&eacute;connection</a> </li>
+          <li class="dropdown">
+            <a data-toggle="dropdown" href="#" id='menuItem'>Articles<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a onClick='jsfAddItem();' href="#" id='menuAddItem' >Créer</a></li>
+              <li><a onClick='jsfModItem();' href="#" id='menuModItem'>Modifier</a></li>
+              <li><a onClick='jsfDelItem();' href="#" id='menuDelItem'>Supprimer</a></li>
+              <li class="divider"></li>
+              <li><a onClick='jsfAddStock();' href="#" id='menuAddStock'>Ajout stock</a></li>
+              <li><a onClick='jsfDelStock();' href="#" id='menuDelStock'>Supp. stock</a></li>
+            </ul>
+          </li>
+          <li> <a href="#" onClick='jsfInventory();'>Inventaire</a> </li>
+        </ul>
+    </nav>
+	{# /Menu de l'application #}  
+	
+  </div> <!-- /container -->
+
+  <div class="col-md-12" id='jsTree'>&nbsp;</div>
+  
+  <input type='hidden' name='Action' id='Action' value='' />
+</form>
+
+{# Boîte d'affichage d'erreur #}
+  <div class="col-md-12">&nbsp;</div>
+	<div class="col-md-12" id='bAlert' style='display: none'>
+		<div class="alert alert-dismissable alert-danger">
+			<h4>{{ error }}</h4> 
+		</div>
+	</div>
+{# /Boîte d'affichage d'erreur #}
+
+{% include 'footer.twig' %}

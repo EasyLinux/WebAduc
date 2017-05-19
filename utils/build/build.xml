@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="TestDepot" default="ci" basedir=".">
+	<property name="source" value="www" />
+	<property name="srvWeb" value="10.29.200.48" />
+	<property name="pathWeb" value="/var/www/phpAduc" />
+
+	<target name="ci"
+        description="Tâche principale d'intégration continue"
+        depends="clean,qa"
+    />
+
+   <target name="clean" description="Vide les répertoires d'artefacts">
+
+   	<delete dir="${project.basedir}/build/api" />
+    	<delete dir="${project.basedir}/build/code-browser" />
+    	<delete dir="${project.basedir}/build/coverage" />
+    	<delete dir="${project.basedir}/build/logs" />
+    	<delete dir="${project.basedir}/build/pdepend" />
+
+    	<mkdir dir="${project.basedir}/build/api" />
+    	<mkdir dir="${project.basedir}/build/code-browser" />
+    	<mkdir dir="${project.basedir}/build/coverage" />
+    	<mkdir dir="${project.basedir}/build/logs" />
+    	<mkdir dir="${project.basedir}/build/pdepend" />
+	</target>
+
+   <target name="qa" description="Lance les outils d'analyse">
+   <!--	<phingcall target="pdepend" />
+   	<phingcall target="phpmd" />
+   	<phingcall target="phpcpd" />
+   	<phingcall target="phploc" />
+   	<phingcall target="phpcs" />
+   	<phingcall target="phpdoc" /> -->
+   	<phingcall target="phpunit" />
+   	<!-- <phingcall target="phpcb" /> -->
+	<phingcall target="publish"/>
+   	<phingcall target="phpselenium" /> 
+   </target>
+
+	<target name="pdepend">
+   	<phpdepend file="${project.basedir}/${source}/" excludeDirectories="${project.basedir}/${source}/vendor/">
+      	<logger type="jdepend-xml" outfile="${project.basedir}/build/logs/jdepend.xml" />
+      	<logger type="jdepend-chart" outfile="${project.basedir}/build/pdepend/dependencies.svg" />
+      	<logger type="overview-pyramid" outfile="${project.basedir}/build/pdepend/overview-pyramid.svg" />
+		</phpdepend>
+	</target>
+
+	<target name="phpmd">
+   	<exec logoutput="true" dir="${project.basedir}" command="phpmd '${project.basedir}/${source}/' xml cleancode,codesize,controversial,design,naming,unusedcode  --exclude '${project.basedir}/${source}/vendor/' --reportfile '${project.basedir}/build/logs/phpmd.xml'" escape="false" />
+	</target>
+
+	<target name="phpcpd">
+   	<exec logoutput="true" dir="${project.basedir}" command="phpcpd --log-pmd '${project.basedir}/build/logs/pmd-cpd.xml' --exclude 'vendor' '${project.basedir}/${source}/' " escape="false" />
+	</target>
+
+	<target name="phploc">
+   	<exec logoutput="true" dir="${project.basedir}" command="phploc --log-csv '${project.basedir}/build/logs/phploc.csv' --exclude='vendor' '${project.basedir}/${source}/'" escape="false" />
+	</target>
+
+	<target name="phpcs">
+        <exec logoutput="true" dir="${project.basedir}" command="phpcs --report=checkstyle --standard=PSR1 --ignore=${source}/vendor --report-file=build/logs/checkstyle.xml ${source}" escape="false" />
+	</target>
+
+	<target name="phpdoc">
+   		<exec logoutput="true" dir="${project.basedir}" command="phpdoc -t '${project.basedir}/build/api' -d '${project.basedir}/${source}' --ignore 'vendor/*'" escape="false" />
+	</target>
+
+	<target name="phpunit">
+   		<exec logoutput="true" command="phpunit --coverage-clover 'build/logs/clover.xml' --log-junit 'build/logs/junit/unit.xml' tests/unit" escape="false" />
+	</target>
+
+	<target name="phpselenium">
+   		<exec logoutput="true" dir="${project.basedir}" command="phpunit --log-junit build/logs/junit/func.xml tests/func" escape="false" />
+	</target>
+
+	<target name="phpcb" >
+     	<exec logoutput="true" dir="${project.basedir}" command="phpcb --source 'www/' --output 'build/code-browser' --ignore 'www/vendor/'" escape="false" />
+	</target>
+
+	<target name="publish">
+        <echo msg="Suppression du cache" />
+        <exec logoutput="true" command='ssh git@${srvWeb} "bash -c \"rm -f ${pathWeb}/templates_c/*\" "' />
+        <echo msg="Copie des fichiers sur le serveur web" />
+		<exec logoutput="true" command='rsync -rltv ${project.basedir}/${source}/* git@${srvWeb}:${pathWeb}'  escape="false" />
+	</target>
+</project>

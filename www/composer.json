@@ -1,0 +1,19 @@
+{
+	"name": "snoel/phpaduc",
+	"description": "Web manager for samba AD domain",
+	"type": "project",
+	"license": "GNU/Gpl",
+	"authors": [{
+		"name": "Serge NOEL",
+		"email": "serge.noel@net6a.com"
+	}],
+	"require": {
+		"php": ">=5.5.0",
+		"components/jquery": "3.1.1",
+		"components/jqueryui": "1.12.1",
+		"vakata/jstree": "3.3.3",
+		"twbs/bootstrap": "3.3.7",
+		"twig/twig": "1.31.*",
+		"adldap2/adldap2": "7.0.*"
+	}
+}

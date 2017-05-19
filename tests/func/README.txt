@@ -1,0 +1,1 @@
+Placer les tests fonctionnels dans ce répertoire
